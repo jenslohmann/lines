@@ -5,25 +5,27 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Data object for the Lines board.
+ */
 public class Board {
     /** "External" size */
     private final int size;
     private List<Space> freeSet;
     private Random random;
-    private Controller cntrl;
+    private Lines controller;
 
     public class Space {
+        private int x;
+        private int y;
+        private int occupant; // FIXME
+        boolean selected;
+        int distanceToDest; // Used by shortest path algorithm
+
         public Space(int x, int y) {
-            super();
             this.x = x;
             this.y = y;
         }
-
-        private int x;
-        private int y;
-        int occupant; // FIXME
-        boolean selected;
-        int distanceToDest; // Used by shortest path algorithm
 
         public void setOccupant(int newValue) {
             occupant = newValue;
@@ -142,7 +144,7 @@ public class Board {
                 space.setOccupant(p);
                 score += removeCreatedLine(space);
             } else {
-                cntrl.setState(Controller.GAME_OVER);
+                controller.setState(GameState.GAME_OVER);
                 return 0;
             }
         }
@@ -200,8 +202,8 @@ public class Board {
         return space[1 + x + (y + 1) * (size + 1)];
     }
 
-    public void setCntrl(Controller cntrl) {
-        this.cntrl = cntrl;
+    public void setController(Lines controller) {
+        this.controller = controller;
     }
 
     public void freeSpace(Space selectedSpace) {

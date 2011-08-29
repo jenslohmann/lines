@@ -1,8 +1,10 @@
 package dk.jlh.games.lines;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import dk.jlh.games.lines.Board.Space;
@@ -12,8 +14,8 @@ public class LinesView extends View {
     // w: 320, h: 430
     int width = 0;
     int height = 0;
-    Controller cntrlr;
-    Bitmap[] bitmap;
+    Lines controller;
+    Bitmap[] bitmaps;
 
     int boardXCoord = 0;
     int boardYCoord = 40;
@@ -24,11 +26,10 @@ public class LinesView extends View {
     float lastTouchX = 0F;
     float lastTouchY = 0F;
     float lastTouchSize = 0F;
+    private Board board;
 
-    public LinesView(Lines context, Controller cntrlr) {
-        super(context);
-        bitmap = context.getBitmaps();
-        this.cntrlr = cntrlr;
+    public LinesView(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class LinesView extends View {
 
         canvas.drawText("w:" + width + " h:" + height + " cw:" + cellWidth, 12, 12, bgPaint);
 
-        canvas.drawText("Score:" + cntrlr.score, 100, 30, bgPaint);
+        //canvas.drawText("Score:" + controller.score, 100, 30, bgPaint);
         
         Paint selected = new Paint();
         selected.setColor(0xff2020f0);
@@ -53,16 +54,15 @@ public class LinesView extends View {
             canvas.drawLine(boardXCoord(i), boardYCoord(0), boardXCoord(i), boardYCoord(9) + gap, bgPaint);
         }
 
-        Board board = cntrlr.getBoard();
         for (int x = 0; x < 9; x++) {
             for (int y = 0; y < 9; y++) {
-                Space space = board.getSpace(x,y);
+                Space space = board.getSpace(x, y);
                 if (space.selected) {
                     canvas.drawRect(boardXCoord(x), boardYCoord(y), boardXCoord(x + 1) - 1, boardYCoord(y + 1) - 1,
                             selected);
                 }
                 if (space.occupant > 0) {
-                    canvas.drawBitmap(bitmap[0] /* FIXME */, boardXCoord(x), boardYCoord(y), bgPaint);
+                    canvas.drawBitmap(bitmaps[0] /* FIXME */, boardXCoord(x), boardYCoord(y), bgPaint);
                     canvas.drawText("" + space.occupant, boardXCoord(x) + 5, boardYCoord(y) + cellWidth - 5, txtPaint);
                 }
                 // DEBUG
@@ -108,10 +108,18 @@ public class LinesView extends View {
         int touchSize = (int) event.getSize();
         int boardX = (int) ((event.getX() - boardXCoord) / cellWidth);
         int boardY = (int) ((event.getY() - boardYCoord) / cellWidth);
-        if (boardX >= 0 && boardX < 9 && boardY >= 0 && boardY < 9) {
-            return cntrlr.onTouchEvent(boardX, boardY, touchSize);
-        } else {
-            return false;
-        }
+        return boardX >= 0 && boardX < 9 && boardY >= 0 && boardY < 9 && controller.onTouchEvent(boardX, boardY, touchSize);
+    }
+
+    public void setController(Lines controller) {
+        this.controller = controller;
+    }
+
+    public void setBitmaps(Bitmap[] bitmaps) {
+        this.bitmaps = bitmaps;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
     }
 }

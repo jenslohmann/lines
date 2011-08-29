@@ -1,13 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
-<GridView android:id="@+id/GridView01" android:numColumns="9" android:layout_width="wrap_content" android:layout_height="wrap_content"></GridView>
+<LinearLayout
+android:id="@+id/widget60"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:orientation="vertical"
+xmlns:android="http://schemas.android.com/apk/res/android"
+>
+<TableRow
+android:id="@+id/widget62"
+android:layout_width="fill_parent"
+android:layout_height="25px"
+android:orientation="horizontal"
+>
+<TextView
+android:id="@+id/next3Label"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Next 3:"
+>
+</TextView>
+<ImageView
+android:id="@+id/widget72"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+>
+</ImageView>
+<ImageView
+android:id="@+id/widget74"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+>
+</ImageView>
+<ImageView
+android:id="@+id/widget73"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+>
+</ImageView>
+<TextView
+android:id="@+id/widget84"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_weight="1"
+>
+</TextView>
+<TextView
+android:id="@+id/scoreLabel"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Score:"
+>
+</TextView>
+<TextView
+android:id="@+id/score"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="24"
+>
+</TextView>
+</TableRow>
+<dk.jlh.games.lines.LinesView
+android:id="@+id/board"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_gravity="center_horizontal"/>
 </LinearLayout>
