@@ -5,12 +5,15 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import dk.jlh.games.lines.Board.Space;
 
-public class LinesView extends View {
+public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
 
+    public static final String TAG = "Lines";
     // w: 320, h: 430
     int width = 0;
     int height = 0;
@@ -27,27 +30,77 @@ public class LinesView extends View {
     float lastTouchY = 0F;
     float lastTouchSize = 0F;
     private Board board;
+    private final SurfaceHolder holder;
+    private Thread worker;
+
+    private boolean running = true;
 
     public LinesView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        holder = getHolder();
+        worker = new WorkerThread();
+        holder.addCallback(this);
+    }
+
+    class WorkerThread extends Thread {
+        @Override
+        public void run() {
+            while (running) {
+                synchronized (holder) {
+                    Canvas canvas = holder.lockCanvas();
+                    try {
+                        doDraw(canvas);
+                    } finally {
+                        holder.unlockCanvasAndPost(canvas);
+                    }
+                }
+            }
+        }
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        worker.start();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+        // FIXME
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+        boolean retry = true;
+        running = false;
+        while (retry) {
+            try {
+                worker.join();
+                retry = false;
+
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+        }
+    }
+
+    protected void doDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Paint bgPaint = new Paint();
-        bgPaint.setColor(0xff8090a0);
+        Log.d(TAG, "doDraw");
+
+        Paint black = new Paint();
+        black.setColor(0x80000000);
+
+        canvas.drawRect(boardXCoord(0), boardYCoord(0), boardXCoord(9)+gap, boardYCoord(9)+gap, black);
+
         Paint txtPaint = new Paint();
         txtPaint.setColor(0xff000000);
         txtPaint.setTextSize(35f);
 
-        canvas.drawText("w:" + width + " h:" + height + " cw:" + cellWidth, 12, 12, bgPaint);
-
-        //canvas.drawText("Score:" + controller.score, 100, 30, bgPaint);
-        
         Paint selected = new Paint();
         selected.setColor(0xff2020f0);
+        Paint bgPaint = new Paint();
+        bgPaint.setColor(0xff8090a0);
 
         for (int i = 0; i < 10; i++) {
             canvas.drawLine(boardXCoord(0), boardYCoord(i), boardXCoord(9) + gap, boardYCoord(i), bgPaint);
@@ -66,7 +119,7 @@ public class LinesView extends View {
                     canvas.drawText("" + space.occupant, boardXCoord(x) + 5, boardYCoord(y) + cellWidth - 5, txtPaint);
                 }
                 // DEBUG
-                if(space.distanceToDest < 20) {
+                if (space.distanceToDest < 20) {
                     canvas.drawText("" + space.distanceToDest, boardXCoord(x) + 10, boardYCoord(y) + cellWidth - 5, bgPaint);
                 }
             }
@@ -105,10 +158,10 @@ public class LinesView extends View {
         lastTouchY = event.getY();
         lastTouchSize = event.getSize();
 
-        int touchSize = (int) event.getSize();
+        // int touchSize = (int) event.getSize();
         int boardX = (int) ((event.getX() - boardXCoord) / cellWidth);
         int boardY = (int) ((event.getY() - boardYCoord) / cellWidth);
-        return boardX >= 0 && boardX < 9 && boardY >= 0 && boardY < 9 && controller.onTouchEvent(boardX, boardY, touchSize);
+        return boardX >= 0 && boardX < 9 && boardY >= 0 && boardY < 9 && controller.onTouchEvent(boardX, boardY);
     }
 
     public void setController(Lines controller) {

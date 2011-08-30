@@ -18,7 +18,7 @@ public class Board {
     public class Space {
         private int x;
         private int y;
-        private int occupant; // FIXME
+        public int occupant; // FIXME
         boolean selected;
         int distanceToDest; // Used by shortest path algorithm
 

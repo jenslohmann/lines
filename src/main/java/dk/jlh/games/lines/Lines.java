@@ -1,9 +1,11 @@
 package dk.jlh.games.lines;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.SurfaceHolder;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -42,7 +44,7 @@ public class Lines extends Activity {
         setState(GameState.READY);
     }
 
-    boolean onTouchEvent(int x, int y, int size) {
+    boolean onTouchEvent(int x, int y) {
         switch (state) {
             case READY:
                 Board.Space space = board.getSpace(x, y);
@@ -54,8 +56,8 @@ public class Lines extends Activity {
                     selectedSpace = space;
                 } else {
                     if (selectedSpace != null && selectedSpace != space) {
-                        // Moving a piece
                         board.calcDistances(selectedSpace, space);
+                        // Moving a piece
                         if (selectedSpace.distanceToDest < 100) {
                             // FIXME Must move using animation
                             int occupant = selectedSpace.occupant;
@@ -63,7 +65,18 @@ public class Lines extends Activity {
                             selectedSpace.selected = false;
                             selectedSpace = null;
                             board.setSpace(x, y, occupant);
-                            board.addPieces(newPieces());
+
+                            state = GameState.BUSY;
+
+                            int score = board.removeCreatedLine(space);
+                            if (score > 0) {
+                                addToScore(score);
+                            } else {
+                                addToScore(board.addPieces(newPieces()));
+                            }
+
+                            // FIXME Check for game over
+                            state = GameState.READY;
                         }
                     }
                 }
