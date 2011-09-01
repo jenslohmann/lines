@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -46,6 +45,7 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
         @Override
         public void run() {
             while (running) {
+                controller.movePiece();
                 synchronized (holder) {
                     Canvas canvas = holder.lockCanvas();
                     try {
@@ -86,19 +86,19 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
     protected void doDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Log.d(TAG, "doDraw");
+//        Log.d(TAG, "doDraw");
 
         Paint black = new Paint();
         black.setColor(0x80000000);
 
-        canvas.drawRect(boardXCoord(0), boardYCoord(0), boardXCoord(9)+gap, boardYCoord(9)+gap, black);
+        canvas.drawRect(boardXCoord(0), boardYCoord(0), boardXCoord(9) + gap, boardYCoord(9) + gap, black);
 
         Paint txtPaint = new Paint();
         txtPaint.setColor(0xff000000);
         txtPaint.setTextSize(35f);
 
-        Paint selected = new Paint();
-        selected.setColor(0xff2020f0);
+        Paint selectedColour = new Paint();
+        selectedColour.setColor(0xff2020f0);
         Paint bgPaint = new Paint();
         bgPaint.setColor(0xff8090a0);
 
@@ -112,7 +112,12 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
                 Space space = board.getSpace(x, y);
                 if (space.selected) {
                     canvas.drawRect(boardXCoord(x), boardYCoord(y), boardXCoord(x + 1) - 1, boardYCoord(y + 1) - 1,
-                            selected);
+                            selectedColour);
+                } else {
+                    Paint bgColour = new Paint();
+                    bgColour.setColor(0xff000000 + 0x00111111 * Math.min(space.distanceToDest, 15));
+                    canvas.drawRect(boardXCoord(x), boardYCoord(y), boardXCoord(x + 1) - 1, boardYCoord(y + 1) - 1,
+                            bgColour);
                 }
                 if (space.occupant > 0) {
                     canvas.drawBitmap(bitmaps[0] /* FIXME */, boardXCoord(x), boardYCoord(y), bgPaint);

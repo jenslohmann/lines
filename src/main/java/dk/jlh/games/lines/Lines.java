@@ -1,11 +1,10 @@
 package dk.jlh.games.lines;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.SurfaceHolder;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -18,6 +17,68 @@ public class Lines extends Activity {
     private Board.Space selectedSpace;
     private Random randomizer = new Random();
     private LinesView linesView;
+    private Board.Space movingPieceSpace;
+    private static final String TAG = "Lines";
+
+    void movePiece() {
+        if (getState() == GameState.BUSY) {
+            Board.Space movingPieceSpace = getMovingPieceSpace();
+            Board.Space neighbour = null;
+            if (neighbour == null && movingPieceSpace.getX() > 0) {
+                neighbour = board.getSpace(movingPieceSpace.getX() - 1, movingPieceSpace.getY());
+                if (neighbour.distanceToDest == movingPieceSpace.distanceToDest - 1) {
+                    neighbour.occupant = movingPieceSpace.occupant;
+                    movingPieceSpace.occupant = 0;
+                } else {
+                    neighbour = null;
+                }
+            }
+            if (neighbour == null && movingPieceSpace.getX() < 8) {
+                neighbour = board.getSpace(movingPieceSpace.getX() + 1, movingPieceSpace.getY());
+                if (neighbour.distanceToDest == movingPieceSpace.distanceToDest - 1) {
+                    neighbour.occupant = movingPieceSpace.occupant;
+                    movingPieceSpace.occupant = 0;
+                } else {
+                    neighbour = null;
+                }
+            }
+            if (neighbour == null && movingPieceSpace.getY() > 0) {
+                neighbour = board.getSpace(movingPieceSpace.getX(), movingPieceSpace.getY() - 1);
+                if (neighbour.distanceToDest == movingPieceSpace.distanceToDest - 1) {
+                    neighbour.occupant = movingPieceSpace.occupant;
+                    movingPieceSpace.occupant = 0;
+                } else {
+                    neighbour = null;
+                }
+            }
+            if (neighbour == null && movingPieceSpace.getY() < 8) {
+                neighbour = board.getSpace(movingPieceSpace.getX(), movingPieceSpace.getY() + 1);
+                if (neighbour.distanceToDest == movingPieceSpace.distanceToDest - 1) {
+                    neighbour.occupant = movingPieceSpace.occupant;
+                    movingPieceSpace.occupant = 0;
+                } else {
+                    neighbour = null;
+                }
+            }
+            if (neighbour != null) {
+                if (neighbour.distanceToDest == 0) {
+                    int score = board.removeCreatedLine(neighbour);
+                    Log.d(TAG, "Score:"+score);
+                    setMovingPieceSpace(null);
+                    if (score > 0) {
+                        addToScore(score);
+                    } else {
+                        addToScore(board.addPieces(newPieces()));
+                    }
+
+                    // FIXME Check for game over
+                    setState(GameState.READY);
+                } else {
+                    setMovingPieceSpace(neighbour);
+                }
+            }
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,23 +121,15 @@ public class Lines extends Activity {
                         // Moving a piece
                         if (selectedSpace.distanceToDest < 100) {
                             // FIXME Must move using animation
-                            int occupant = selectedSpace.occupant;
-                            board.freeSpace(selectedSpace);
+                            // int occupant = selectedSpace.occupant;
+                            // board.freeSpace(selectedSpace);
                             selectedSpace.selected = false;
+                            movingPieceSpace = selectedSpace;
                             selectedSpace = null;
-                            board.setSpace(x, y, occupant);
+                            // board.setSpace(x, y, occupant);
 
-                            state = GameState.BUSY;
-
-                            int score = board.removeCreatedLine(space);
-                            if (score > 0) {
-                                addToScore(score);
-                            } else {
-                                addToScore(board.addPieces(newPieces()));
-                            }
-
-                            // FIXME Check for game over
-                            state = GameState.READY;
+                            Log.d(TAG, "Moving to " + x + "," + y);
+                            setState(GameState.BUSY);
                         }
                     }
                 }
@@ -95,18 +148,36 @@ public class Lines extends Activity {
         return new int[]{1 + randomizer.nextInt(5), 1 + randomizer.nextInt(5), 1 + randomizer.nextInt(5)};
     }
 
-    void setState(GameState state) {
-        this.state = state;
-
-        // FIXME Not implemented yet
-    }
-
     private void addToScore(int increment) {
         setScore(score + increment);
     }
 
-    private void setScore(int score) {
+    private void setScore(final int score) {
         this.score = score;
-        ((TextView) findViewById(R.id.score)).setText("" + score);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView) findViewById(R.id.score)).setText("" + score);
+            }
+        });
+    }
+
+    public GameState getState() {
+        return state;
+    }
+
+    void setState(GameState state) {
+        this.state = state;
+
+        Log.d(TAG, "State " + state.name());
+        // FIXME Not implemented yet
+    }
+
+    public Board.Space getMovingPieceSpace() {
+        return movingPieceSpace;
+    }
+
+    public void setMovingPieceSpace(Board.Space movingPieceSpace) {
+        this.movingPieceSpace = movingPieceSpace;
     }
 }

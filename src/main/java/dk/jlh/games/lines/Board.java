@@ -1,5 +1,7 @@
 package dk.jlh.games.lines;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +11,9 @@ import java.util.Random;
  * Data object for the Lines board.
  */
 public class Board {
-    /** "External" size */
+    /**
+     * "External" size
+     */
     private final int size;
     private List<Space> freeSet;
     private Random random;
@@ -153,9 +157,8 @@ public class Board {
 
     /**
      * Removes a created line (or more?) of same kind of piece.
-     * 
-     * @param includingSpace
-     * The space that has just received a piece.
+     *
+     * @param includingSpace The space that has just received a piece.
      * @return The score for the removed pieces.
      */
     int removeCreatedLine(Space includingSpace) {
