@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -19,7 +20,13 @@ public class Lines extends Activity {
     private LinesView linesView;
     private Board.Space movingPieceSpace;
     private static final String TAG = "Lines";
+    private int[] nextPieces = newPieces();
+    private Bitmap[] bitmaps;
 
+    /**
+     * Is called solely from worker thread.
+     * Moves a piece one space at a time for animation if a piece is set to move.
+     */
     void movePiece() {
         if (getState() == GameState.BUSY) {
             Board.Space movingPieceSpace = getMovingPieceSpace();
@@ -68,7 +75,8 @@ public class Lines extends Activity {
                     if (score > 0) {
                         addToScore(score);
                     } else {
-                        addToScore(board.addPieces(newPieces()));
+                        addToScore(board.addPieces(nextPieces));
+                        setNextPieces(newPieces());
                     }
 
                     // FIXME Check for game over
@@ -80,6 +88,20 @@ public class Lines extends Activity {
         }
     }
 
+    private void setNextPieces(int[] pieceIds) {
+        // TODO use given piece ids
+        nextPieces = pieceIds;
+        // TODO Combine with setScore etc..
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((ImageView)findViewById(R.id.nextPiece1)).setImageBitmap(bitmaps[0]);
+                ((ImageView)findViewById(R.id.nextPiece2)).setImageBitmap(bitmaps[0]);
+                ((ImageView)findViewById(R.id.nextPiece3)).setImageBitmap(bitmaps[0]);
+            }
+        });
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +109,7 @@ public class Lines extends Activity {
         board.setController(this);
 
         // Read images
-        Bitmap[] bitmaps = new Bitmap[]{BitmapFactory.decodeResource(getResources(), R.drawable.item1)};
+        bitmaps = new Bitmap[]{BitmapFactory.decodeResource(getResources(), R.drawable.item1)};
 
         setContentView(R.layout.main);
         linesView = (LinesView) findViewById(R.id.board);
@@ -120,15 +142,9 @@ public class Lines extends Activity {
                         board.calcDistances(selectedSpace, space);
                         // Moving a piece
                         if (selectedSpace.distanceToDest < 100) {
-                            // FIXME Must move using animation
-                            // int occupant = selectedSpace.occupant;
-                            // board.freeSpace(selectedSpace);
                             selectedSpace.selected = false;
                             movingPieceSpace = selectedSpace;
                             selectedSpace = null;
-                            // board.setSpace(x, y, occupant);
-
-                            Log.d(TAG, "Moving to " + x + "," + y);
                             setState(GameState.BUSY);
                         }
                     }
