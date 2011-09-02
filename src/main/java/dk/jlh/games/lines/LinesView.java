@@ -115,7 +115,7 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
                             selectedColour);
                 } else {
                     Paint bgColour = new Paint();
-                    bgColour.setColor(0xff000000 + 0x00111111 * Math.min(space.distanceToDest, 15));
+                    bgColour.setColor(0xff00ff00 + (0x00111100 - 0x00000011) * Math.min(space.distanceToDest, 15));
                     canvas.drawRect(boardXCoord(x), boardYCoord(y), boardXCoord(x + 1) - 1, boardYCoord(y + 1) - 1,
                             bgColour);
                 }
@@ -123,12 +123,16 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas.drawBitmap(bitmaps[0] /* FIXME */, boardXCoord(x), boardYCoord(y), bgPaint);
                     canvas.drawText("" + space.occupant, boardXCoord(x) + 5, boardYCoord(y) + cellWidth - 5, txtPaint);
                 }
-                // DEBUG
-                if (space.distanceToDest < 20) {
-                    canvas.drawText("" + space.distanceToDest, boardXCoord(x) + 10, boardYCoord(y) + cellWidth - 5, bgPaint);
-                }
             }
         }
+
+        // DEBUG
+        Paint blue = new Paint();
+        blue.setColor(0xff0000ff);
+        for (Space space : board.getFreeSet()) {
+            canvas.drawCircle(boardXCoord(space.getX()) + 3, boardYCoord(space.getY()) + 3, 3, blue);
+        }
+
 
         // DEBUG
         canvas.drawCircle(lastTouchX, lastTouchY, lastTouchSize + 5, bgPaint);

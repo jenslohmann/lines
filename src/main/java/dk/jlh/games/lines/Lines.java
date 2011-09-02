@@ -27,8 +27,8 @@ public class Lines extends Activity {
             if (neighbour == null && movingPieceSpace.getX() > 0) {
                 neighbour = board.getSpace(movingPieceSpace.getX() - 1, movingPieceSpace.getY());
                 if (neighbour.distanceToDest == movingPieceSpace.distanceToDest - 1) {
-                    neighbour.occupant = movingPieceSpace.occupant;
-                    movingPieceSpace.occupant = 0;
+                    board.setSpace(neighbour.getX(), neighbour.getY(), movingPieceSpace.occupant);
+                    board.freeSpace(movingPieceSpace);
                 } else {
                     neighbour = null;
                 }
@@ -36,8 +36,8 @@ public class Lines extends Activity {
             if (neighbour == null && movingPieceSpace.getX() < 8) {
                 neighbour = board.getSpace(movingPieceSpace.getX() + 1, movingPieceSpace.getY());
                 if (neighbour.distanceToDest == movingPieceSpace.distanceToDest - 1) {
-                    neighbour.occupant = movingPieceSpace.occupant;
-                    movingPieceSpace.occupant = 0;
+                    board.setSpace(neighbour.getX(), neighbour.getY(), movingPieceSpace.occupant);
+                    board.freeSpace(movingPieceSpace);
                 } else {
                     neighbour = null;
                 }
@@ -45,8 +45,8 @@ public class Lines extends Activity {
             if (neighbour == null && movingPieceSpace.getY() > 0) {
                 neighbour = board.getSpace(movingPieceSpace.getX(), movingPieceSpace.getY() - 1);
                 if (neighbour.distanceToDest == movingPieceSpace.distanceToDest - 1) {
-                    neighbour.occupant = movingPieceSpace.occupant;
-                    movingPieceSpace.occupant = 0;
+                    board.setSpace(neighbour.getX(), neighbour.getY(), movingPieceSpace.occupant);
+                    board.freeSpace(movingPieceSpace);
                 } else {
                     neighbour = null;
                 }
@@ -54,8 +54,8 @@ public class Lines extends Activity {
             if (neighbour == null && movingPieceSpace.getY() < 8) {
                 neighbour = board.getSpace(movingPieceSpace.getX(), movingPieceSpace.getY() + 1);
                 if (neighbour.distanceToDest == movingPieceSpace.distanceToDest - 1) {
-                    neighbour.occupant = movingPieceSpace.occupant;
-                    movingPieceSpace.occupant = 0;
+                    board.setSpace(neighbour.getX(), neighbour.getY(), movingPieceSpace.occupant);
+                    board.freeSpace(movingPieceSpace);
                 } else {
                     neighbour = null;
                 }

@@ -213,4 +213,8 @@ public class Board {
         selectedSpace.occupant = 0;
         freeSet.add(selectedSpace);
     }
+
+    public List<Space> getFreeSet() {
+        return freeSet;
+    }
 }
