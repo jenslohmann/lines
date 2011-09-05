@@ -22,6 +22,35 @@ public class Lines extends Activity {
     private static final String TAG = "Lines";
     private int[] nextPieces = newPieces();
     private Bitmap[] bitmaps;
+    private boolean running = true;
+    private Thread worker;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        board = new Board();
+        board.setController(this);
+
+        // Read images
+        bitmaps = new Bitmap[]{BitmapFactory.decodeResource(getResources(), R.drawable.item1)};
+
+        setContentView(R.layout.main);
+        linesView = (LinesView) findViewById(R.id.board);
+        linesView.setController(this);
+        linesView.setBitmaps(bitmaps);
+        linesView.setBoard(board);
+        worker = new WorkerThread(linesView, this);
+
+        initialize();
+    }
+
+    void initialize() {
+        setState(GameState.BUSY);
+        board.addPieces(nextPieces);
+        setNextPieces(newPieces());
+        setScore(0);
+        setState(GameState.READY);
+    }
 
     /**
      * Is called solely from worker thread.
@@ -70,7 +99,7 @@ public class Lines extends Activity {
             if (neighbour != null) {
                 if (neighbour.distanceToDest == 0) {
                     int score = board.removeCreatedLine(neighbour);
-                    Log.d(TAG, "Score:"+score);
+                    Log.d(TAG, "Score:" + score);
                     setMovingPieceSpace(null);
                     if (score > 0) {
                         addToScore(score);
@@ -79,8 +108,11 @@ public class Lines extends Activity {
                         setNextPieces(newPieces());
                     }
 
-                    // FIXME Check for game over
-                    setState(GameState.READY);
+                    if (getState() == GameState.GAME_OVER) {
+                        // TODO Post high score to internet
+                    } else {
+                        setState(GameState.READY);
+                    }
                 } else {
                     setMovingPieceSpace(neighbour);
                 }
@@ -95,36 +127,11 @@ public class Lines extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((ImageView)findViewById(R.id.nextPiece1)).setImageBitmap(bitmaps[0]);
-                ((ImageView)findViewById(R.id.nextPiece2)).setImageBitmap(bitmaps[0]);
-                ((ImageView)findViewById(R.id.nextPiece3)).setImageBitmap(bitmaps[0]);
+                ((ImageView) findViewById(R.id.nextPiece1)).setImageBitmap(bitmaps[0]);
+                ((ImageView) findViewById(R.id.nextPiece2)).setImageBitmap(bitmaps[0]);
+                ((ImageView) findViewById(R.id.nextPiece3)).setImageBitmap(bitmaps[0]);
             }
         });
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        board = new Board();
-        board.setController(this);
-
-        // Read images
-        bitmaps = new Bitmap[]{BitmapFactory.decodeResource(getResources(), R.drawable.item1)};
-
-        setContentView(R.layout.main);
-        linesView = (LinesView) findViewById(R.id.board);
-        linesView.setController(this);
-        linesView.setBitmaps(bitmaps);
-        linesView.setBoard(board);
-
-        initialize();
-    }
-
-    void initialize() {
-        setState(GameState.BUSY);
-        board.addPieces(newPieces());
-        setScore(0);
-        setState(GameState.READY);
     }
 
     boolean onTouchEvent(int x, int y) {
@@ -186,7 +193,6 @@ public class Lines extends Activity {
         this.state = state;
 
         Log.d(TAG, "State " + state.name());
-        // FIXME Not implemented yet
     }
 
     public Board.Space getMovingPieceSpace() {
@@ -195,5 +201,21 @@ public class Lines extends Activity {
 
     public void setMovingPieceSpace(Board.Space movingPieceSpace) {
         this.movingPieceSpace = movingPieceSpace;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
+    public void startWorker() {
+        worker.start();
+    }
+
+    public void joinWorker() throws InterruptedException {
+        worker.join();
     }
 }

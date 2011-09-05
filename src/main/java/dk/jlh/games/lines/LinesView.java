@@ -29,38 +29,17 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
     float lastTouchY = 0F;
     float lastTouchSize = 0F;
     private Board board;
-    private final SurfaceHolder holder;
-    private Thread worker;
-
-    private boolean running = true;
+    private SurfaceHolder holder;
 
     public LinesView(Context context, AttributeSet attrs) {
         super(context, attrs);
         holder = getHolder();
-        worker = new WorkerThread();
         holder.addCallback(this);
-    }
-
-    class WorkerThread extends Thread {
-        @Override
-        public void run() {
-            while (running) {
-                controller.movePiece();
-                synchronized (holder) {
-                    Canvas canvas = holder.lockCanvas();
-                    try {
-                        doDraw(canvas);
-                    } finally {
-                        holder.unlockCanvasAndPost(canvas);
-                    }
-                }
-            }
-        }
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        worker.start();
+        controller.startWorker();
     }
 
     @Override
@@ -71,12 +50,11 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         boolean retry = true;
-        running = false;
+        controller.setRunning(false);
         while (retry) {
             try {
-                worker.join();
+                controller.joinWorker();
                 retry = false;
-
             } catch (InterruptedException e) {
                 // Ignore
             }
@@ -127,12 +105,11 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // DEBUG
-        Paint blue = new Paint();
-        blue.setColor(0xff0000ff);
-        for (Space space : board.getFreeSet()) {
-            canvas.drawCircle(boardXCoord(space.getX()) + 3, boardYCoord(space.getY()) + 3, 3, blue);
-        }
-
+//        Paint blue = new Paint();
+//        blue.setColor(0xff0000ff);
+//        for (Space space : board.getFreeSet()) {
+//            canvas.drawCircle(boardXCoord(space.getX()) + 3, boardYCoord(space.getY()) + 3, 3, blue);
+//        }
 
         // DEBUG
         canvas.drawCircle(lastTouchX, lastTouchY, lastTouchSize + 5, bgPaint);
@@ -183,5 +160,9 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setBoard(Board board) {
         this.board = board;
+    }
+
+    public SurfaceHolder getTheHolder() {
+        return holder;
     }
 }
