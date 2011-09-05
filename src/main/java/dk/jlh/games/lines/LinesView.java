@@ -130,7 +130,6 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
         cellWidth = (width - gap) / 9; // ints cast to float
         borderWidth = (int) (width - gap - (cellWidth * 9)) / 2;
 
-        // FIXME Set width, height to 9 x 9 board + score etc..
         setMinimumWidth(width);
         setMinimumHeight(height);
 

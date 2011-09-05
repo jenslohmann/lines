@@ -1,7 +1,5 @@
 package dk.jlh.games.lines;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,43 +160,50 @@ public class Board {
      * @return The score for the removed pieces.
      */
     int removeCreatedLine(Space includingSpace) {
-        if (checkSpaces(includingSpace, LEFT, RIGHT, false) > 4) {
-            return 2 * checkSpaces(includingSpace, LEFT, RIGHT, true);
+        List<Space> candidates = checkSpaces(includingSpace, LEFT, RIGHT);
+        if (candidates.size() > 4) {
+            return 2 * removeSpaces(candidates);
         }
-        if (checkSpaces(includingSpace, ABOVE_LEFT, BELOW_RIGHT, false) > 4) {
-            return 2 * checkSpaces(includingSpace, ABOVE_LEFT, BELOW_RIGHT, true);
+        candidates = checkSpaces(includingSpace, ABOVE_LEFT, BELOW_RIGHT);
+        if (candidates.size() > 4) {
+            return 2 * removeSpaces(candidates);
         }
-        if (checkSpaces(includingSpace, ABOVE, BELOW, false) > 4) {
-            return 2 * checkSpaces(includingSpace, ABOVE, BELOW, true);
+        candidates = checkSpaces(includingSpace, ABOVE, BELOW);
+        if (candidates.size() > 4) {
+            return 2 * removeSpaces(candidates);
         }
-        if (checkSpaces(includingSpace, ABOVE_RIGHT, BELOW_LEFT, false) > 4) {
-            return 2 * checkSpaces(includingSpace, ABOVE_RIGHT, BELOW_LEFT, true);
+        candidates = checkSpaces(includingSpace, ABOVE_RIGHT, BELOW_LEFT);
+        if (candidates.size() > 4) {
+            return 2 * removeSpaces(candidates);
         }
         return 0;
     }
 
-    private int checkSpaces(Space includingSpace, int direction1, int direction2, boolean remove) {
+    private List<Space> checkSpaces(Space includingSpace, int direction1, int direction2) {
+        List<Space> candidates = new ArrayList<Space>(9);
         int suite = 1;
+        candidates.add(includingSpace);
         Space s = includingSpace;
         while ((s = space[1 + s.getX() + (s.getY() + 1) * (size + 1) + direction1]) != null
                 && s.occupant == includingSpace.occupant) {
+            candidates.add(s);
             suite++;
-            if (remove) {
-                freeSpace(s);
-            }
         }
         s = includingSpace;
         while ((s = space[1 + s.getX() + (s.getY() + 1) * (size + 1) + direction2]) != null
                 && s.occupant == includingSpace.occupant) {
+            candidates.add(s);
             suite++;
-            if (remove) {
-                freeSpace(s);
-            }
         }
-        if (remove) {
-            freeSpace(includingSpace);
+        return candidates;
+    }
+
+    private int removeSpaces(List<Space> toRemove) {
+        int size = toRemove.size();
+        for(Space s: toRemove) {
+            freeSpace(s);
         }
-        return suite;
+        return size;
     }
 
     Space getSpace(int x, int y) {
