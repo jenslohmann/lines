@@ -20,7 +20,7 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
     Bitmap[] bitmaps;
 
     int boardXCoord = 0;
-    int boardYCoord = 40;
+    int boardYCoord = 0;
     int gap = 1;
     float cellWidth = (width - gap) / 9; // ints cast to float
     float borderWidth = (int) (width - gap - (cellWidth * 9)) / 2;
@@ -64,8 +64,6 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
     protected void doDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-//        Log.d(TAG, "doDraw");
-
         Paint black = new Paint();
         black.setColor(0x80000000);
 
@@ -81,8 +79,8 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
         bgPaint.setColor(0xff8090a0);
 
         for (int i = 0; i < 10; i++) {
-            canvas.drawLine(boardXCoord(0), boardYCoord(i), boardXCoord(9) + gap, boardYCoord(i), bgPaint);
-            canvas.drawLine(boardXCoord(i), boardYCoord(0), boardXCoord(i), boardYCoord(9) + gap, bgPaint);
+            canvas.drawLine(boardXCoord(0), boardYCoord(i), boardXCoord(9) + gap - 1, boardYCoord(i), bgPaint);
+            canvas.drawLine(boardXCoord(i), boardYCoord(0), boardXCoord(i), boardYCoord(9) + gap - 1, bgPaint);
         }
 
         for (int x = 0; x < 9; x++) {

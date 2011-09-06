@@ -150,6 +150,9 @@ public class Board {
                 return 0;
             }
         }
+        if (freeSet.size() == 0) {
+            controller.setState(GameState.GAME_OVER);
+        }
         return score;
     }
 
@@ -200,7 +203,7 @@ public class Board {
 
     private int removeSpaces(List<Space> toRemove) {
         int size = toRemove.size();
-        for(Space s: toRemove) {
+        for (Space s : toRemove) {
             freeSpace(s);
         }
         return size;

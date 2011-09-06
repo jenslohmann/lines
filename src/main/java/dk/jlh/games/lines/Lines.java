@@ -99,7 +99,6 @@ public class Lines extends Activity {
             if (neighbour != null) {
                 if (neighbour.distanceToDest == 0) {
                     int score = board.removeCreatedLine(neighbour);
-                    Log.d(TAG, "Score:" + score);
                     setMovingPieceSpace(null);
                     if (score > 0) {
                         addToScore(score);
