@@ -1,6 +1,7 @@
 package dk.jlh.games.lines;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -144,7 +145,7 @@ public class Board {
                 int s = random.nextInt(freeSize);
                 Space space = freeSet.remove(s);
                 space.setOccupant(p);
-                score += removeCreatedLine(space);
+                score += removeCreatedLine(space).size() * 2;
             } else {
                 controller.setState(GameState.GAME_OVER);
                 return 0;
@@ -160,26 +161,30 @@ public class Board {
      * Removes a created line (or more?) of same kind of piece.
      *
      * @param includingSpace The space that has just received a piece.
-     * @return The score for the removed pieces.
+     * @return The removed pieces.
      */
-    int removeCreatedLine(Space includingSpace) {
+    List<Space> removeCreatedLine(Space includingSpace) {
         List<Space> candidates = checkSpaces(includingSpace, LEFT, RIGHT);
         if (candidates.size() > 4) {
-            return 2 * removeSpaces(candidates);
+            removeSpaces(candidates);
+            return candidates;
         }
         candidates = checkSpaces(includingSpace, ABOVE_LEFT, BELOW_RIGHT);
         if (candidates.size() > 4) {
-            return 2 * removeSpaces(candidates);
+            removeSpaces(candidates);
+            return candidates;
         }
         candidates = checkSpaces(includingSpace, ABOVE, BELOW);
         if (candidates.size() > 4) {
-            return 2 * removeSpaces(candidates);
+            removeSpaces(candidates);
+            return candidates;
         }
         candidates = checkSpaces(includingSpace, ABOVE_RIGHT, BELOW_LEFT);
         if (candidates.size() > 4) {
-            return 2 * removeSpaces(candidates);
+            removeSpaces(candidates);
+            return candidates;
         }
-        return 0;
+        return Collections.EMPTY_LIST;
     }
 
     private List<Space> checkSpaces(Space includingSpace, int direction1, int direction2) {

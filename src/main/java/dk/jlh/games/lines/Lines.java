@@ -98,7 +98,7 @@ public class Lines extends Activity {
             }
             if (neighbour != null) {
                 if (neighbour.distanceToDest == 0) {
-                    int score = board.removeCreatedLine(neighbour);
+                    int score = board.removeCreatedLine(neighbour).size() * 2;
                     setMovingPieceSpace(null);
                     if (score > 0) {
                         addToScore(score);
