@@ -19,7 +19,6 @@ public class Lines extends Activity {
     private int score;
     private Board.Space selectedSpace;
     private Random randomizer = new Random();
-    private LinesView linesView;
     private Board.Space movingPieceSpace;
     private static final String TAG = "Lines";
     private int[] nextPieces = newPieces();
@@ -38,7 +37,7 @@ public class Lines extends Activity {
         bitmaps = new Bitmap[]{BitmapFactory.decodeResource(getResources(), R.drawable.item1)};
 
         setContentView(R.layout.main);
-        linesView = (LinesView) findViewById(R.id.board);
+        LinesView linesView = (LinesView) findViewById(R.id.board);
         linesView.setController(this);
         linesView.setBitmaps(bitmaps);
         linesView.setBoard(board);

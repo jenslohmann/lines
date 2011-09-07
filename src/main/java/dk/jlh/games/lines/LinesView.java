@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -12,8 +13,7 @@ import dk.jlh.games.lines.Board.Space;
 
 public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
 
-    public static final String TAG = "Lines";
-    // w: 320, h: 430
+    // w: 320, h: 405
     int width = 0;
     int height = 0;
     Lines controller;
@@ -71,7 +71,7 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
 
         Paint txtPaint = new Paint();
         txtPaint.setColor(0xff000000);
-        txtPaint.setTextSize(35f);
+        txtPaint.setTextSize(30f);
 
         Paint selectedColour = new Paint();
         selectedColour.setColor(0xff2020f0);
@@ -87,12 +87,12 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
             for (int y = 0; y < 9; y++) {
                 Space space = board.getSpace(x, y);
                 if (space.selected) {
-                    canvas.drawRect(boardXCoord(x), boardYCoord(y), boardXCoord(x + 1) - 1, boardYCoord(y + 1) - 1,
+                    canvas.drawRect(boardXCoord(x) + 1, boardYCoord(y) + 1, boardXCoord(x + 1), boardYCoord(y + 1),
                             selectedColour);
                 } else {
                     Paint bgColour = new Paint();
                     bgColour.setColor(0xff00ff00 + (0x00111100 - 0x00000011) * Math.min(space.distanceToDest, 15));
-                    canvas.drawRect(boardXCoord(x), boardYCoord(y), boardXCoord(x + 1) - 1, boardYCoord(y + 1) - 1,
+                    canvas.drawRect(boardXCoord(x) + 1, boardYCoord(y) + 1, boardXCoord(x + 1), boardYCoord(y + 1),
                             bgColour);
                 }
                 if (space.occupant > 0) {
@@ -131,6 +131,7 @@ public class LinesView extends SurfaceView implements SurfaceHolder.Callback {
         setMinimumWidth(width);
         setMinimumHeight(height);
 
+        Log.d("Lines", "Screensize:(" + width + "," + height + ").");
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
