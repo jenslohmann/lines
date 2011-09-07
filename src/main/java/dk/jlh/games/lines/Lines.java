@@ -8,6 +8,8 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Lines extends Activity {
@@ -24,6 +26,7 @@ public class Lines extends Activity {
     private Bitmap[] bitmaps;
     private boolean running = true;
     private Thread worker;
+    private List<Board.Space> toRemove = new ArrayList<Board.Space>(10);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,12 +101,11 @@ public class Lines extends Activity {
             }
             if (neighbour != null) {
                 if (neighbour.distanceToDest == 0) {
-                    int score = board.removeCreatedLine(neighbour).size() * 2;
+                    List<Board.Space> spacesToRemove = board.removeCreatedLine(neighbour);
+                    toRemove.addAll(spacesToRemove);
                     setMovingPieceSpace(null);
-                    if (score > 0) {
-                        addToScore(score);
-                    } else {
-                        addToScore(board.addPieces(nextPieces));
+                    if (spacesToRemove.isEmpty()) {
+                        board.addPieces(nextPieces);
                         setNextPieces(newPieces());
                     }
 
@@ -115,6 +117,10 @@ public class Lines extends Activity {
                 } else {
                     setMovingPieceSpace(neighbour);
                 }
+            }
+            if (getState() == GameState.BUSY && toRemove.isEmpty() && movingPieceSpace == null) {
+                Log.d("LINES", "YAYA!");
+                setState(GameState.READY);
             }
         }
     }
@@ -162,8 +168,17 @@ public class Lines extends Activity {
                 break;
         }
 
-        linesView.invalidate();
         return false;
+    }
+
+    /**
+     * Removes next piece in line to be removed in the animation.
+     */
+    public void removePiece() {
+        if (!toRemove.isEmpty()) {
+            board.freeSpace(toRemove.remove(0));
+            addToScore(1);
+        }
     }
 
     private int[] newPieces() {

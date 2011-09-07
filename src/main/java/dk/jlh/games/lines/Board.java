@@ -166,22 +166,18 @@ public class Board {
     List<Space> removeCreatedLine(Space includingSpace) {
         List<Space> candidates = checkSpaces(includingSpace, LEFT, RIGHT);
         if (candidates.size() > 4) {
-            removeSpaces(candidates);
             return candidates;
         }
         candidates = checkSpaces(includingSpace, ABOVE_LEFT, BELOW_RIGHT);
         if (candidates.size() > 4) {
-            removeSpaces(candidates);
             return candidates;
         }
         candidates = checkSpaces(includingSpace, ABOVE, BELOW);
         if (candidates.size() > 4) {
-            removeSpaces(candidates);
             return candidates;
         }
         candidates = checkSpaces(includingSpace, ABOVE_RIGHT, BELOW_LEFT);
         if (candidates.size() > 4) {
-            removeSpaces(candidates);
             return candidates;
         }
         return Collections.EMPTY_LIST;
@@ -189,29 +185,18 @@ public class Board {
 
     private List<Space> checkSpaces(Space includingSpace, int direction1, int direction2) {
         List<Space> candidates = new ArrayList<Space>(9);
-        int suite = 1;
         candidates.add(includingSpace);
         Space s = includingSpace;
         while ((s = space[1 + s.getX() + (s.getY() + 1) * (size + 1) + direction1]) != null
                 && s.occupant == includingSpace.occupant) {
             candidates.add(s);
-            suite++;
         }
         s = includingSpace;
         while ((s = space[1 + s.getX() + (s.getY() + 1) * (size + 1) + direction2]) != null
                 && s.occupant == includingSpace.occupant) {
             candidates.add(s);
-            suite++;
         }
         return candidates;
-    }
-
-    private int removeSpaces(List<Space> toRemove) {
-        int size = toRemove.size();
-        for (Space s : toRemove) {
-            freeSpace(s);
-        }
-        return size;
     }
 
     Space getSpace(int x, int y) {
@@ -225,9 +210,5 @@ public class Board {
     public void freeSpace(Space selectedSpace) {
         selectedSpace.occupant = 0;
         freeSet.add(selectedSpace);
-    }
-
-    public List<Space> getFreeSet() {
-        return freeSet;
     }
 }

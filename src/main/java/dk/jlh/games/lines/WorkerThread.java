@@ -21,6 +21,7 @@ class WorkerThread extends Thread {
     public void run() {
         while (controller.isRunning()) {
             controller.movePiece();
+            controller.removePiece();
             // FIXME Check for state change - don't redraw if stable
             synchronized (surfaceHolder) {
                 Canvas canvas = surfaceHolder.lockCanvas();
