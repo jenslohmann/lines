@@ -1,5 +1,6 @@
 package dk.jlh.games.lines;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -49,19 +50,24 @@ public class BoardUnitTest {
     @Test
     public void testCalcDistForNeighbours2() throws Exception {
         Board board = (new BoardBuilder(9))
-                .row(0, "1111     ")
-                .row(1, "123451   ")
-                .row(2, "  234512 ")
-                .row(3, " 123451  ")
-                .row(4, "123      ")
-                .row(5, "123      ")
-                .row(6, "123      ")
-                .row(7, "123      ")
-                .row(8, "123      ")
+                .row(0, " 1 1 1 1         .")
+                .row(1, " 1 2 3 4 5 1     .")
+                .row(2, "     2 3 4 5 1 2 .")
+                .row(3, "   1 2 3 4 5 1    ")
+                .row(4, " 1 2 3            ")
+                .row(5, " 1 2 3            ")
+                .row(6, " 1 2 3            ")
+                .row(7, " 1 2 3            ")
+                .row(8, " 1 2 3            ")
                 .build();
         Space spaceA = board.getSpace(5, 0);
         Space spaceB = board.getSpace(8, 0);
         board.calcDistances(spaceA, spaceB);
         assertThat(spaceA.distanceToDest, is(3));
+        assertThat(board.getSpace(4, 0).distanceToDest, is(4));
+        assertThat(board.getSpace(5, 1).distanceToDest, is(greaterThan(1000)));
+        assertThat(board.getSpace(7, 1).distanceToDest, is(2));
+        assertThat(board.getSpace(7, 0).distanceToDest, is(1));
+        assertThat(board.getSpace(8, 1).distanceToDest, is(1));
     }
 }

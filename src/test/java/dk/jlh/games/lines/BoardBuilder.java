@@ -15,19 +15,22 @@ public class BoardBuilder {
     }
 
     public BoardBuilder row(int row, String data) {
-        for (int i = 0; i < data.length(); i++) {
+        for (int i = 0; i < data.length() / 2; i++) {
             int occupant = 0;
-            switch (data.charAt(i)) {
+            char item = data.charAt(i * 2 + 1);
+            switch (item) {
                 case '1':
                 case '2':
                 case '3':
                 case '4':
                 case '5':
-                    occupant = data.charAt(i) - '1';
+                    occupant = item - '1' + 1;
                     break;
                 case ' ':
+                case '.':
                 default:
                     occupant = 0;
+                    board.freeSpace(board.getSpace(i, row));
             }
             board.setSpace(i, row, occupant);
         }
