@@ -13,7 +13,7 @@ public class Board {
     /**
      * "External" size
      */
-    private final int size;
+    final int size;
     private List<Space> freeSet;
     private Random random;
     private Lines controller;

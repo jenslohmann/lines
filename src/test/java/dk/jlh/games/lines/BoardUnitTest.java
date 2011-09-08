@@ -1,5 +1,6 @@
 package dk.jlh.games.lines;
 
+import static dk.jlh.games.lines.BoardMatcher.matches;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -70,4 +71,29 @@ public class BoardUnitTest {
         assertThat(board.getSpace(7, 0).distanceToDest, is(1));
         assertThat(board.getSpace(8, 1).distanceToDest, is(1));
     }
-}
+    @Test
+    public void testRemoveMe() throws Exception {
+        Board board = (new BoardBuilder(9))
+                .row(0, " 1 1 1 1         .")
+                .row(1, " 1 2 3 4 5 1     .")
+                .row(2, "     2 3 4 5 1 2 .")
+                .row(3, "   1 2 3 4 5 1    ")
+                .row(4, " 1 2 3            ")
+                .row(5, " 1 2 3            ")
+                .row(6, " 1 2 3            ")
+                .row(7, " 1 2 3            ")
+                .row(8, " 1 2 3            ")
+                .build();
+        Board board2 = (new BoardBuilder(9))
+                .row(0, " 1 1 1 1         .")
+                .row(1, " 1 2 3 4 5 1     .")
+                .row(2, "     2 3 4 5 1 2 .")
+                .row(3, "   1 2 3 4 5 1    ")
+                .row(4, " 1 2 3            ")
+                .row(5, " 1 2 3            ")
+                .row(6, " 1 2 3            ")
+                .row(7, " 1 2 3            ")
+                .row(8, " 1 2 3            ")
+                .build();
+        assertThat(board, matches(board2));
+    }}
