@@ -41,6 +41,11 @@ public class Board {
         public int getY() {
             return y;
         }
+
+        @Override
+        public String toString() {
+            return "Space(" + x + "," + y + ")";
+        }
     }
 
     private Space[] space;
@@ -210,5 +215,23 @@ public class Board {
     public void freeSpace(Space selectedSpace) {
         selectedSpace.occupant = 0;
         freeSet.add(selectedSpace);
+    }
+
+    @Override
+    public String toString() {
+        String res = "";
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                Space s = getSpace(x, y);
+                if (s.distanceToDest > 100) {
+                    res += "?";
+                } else {
+                    res += ((char) ('0' + s.distanceToDest));
+                }
+                res += ((char) ('0' + s.occupant));
+            }
+            res += "\n";
+        }
+        return res;
     }
 }

@@ -1,16 +1,14 @@
 package dk.jlh.games.lines;
 
-import static dk.jlh.games.lines.BoardMatcher.matches;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-
-import java.util.LinkedList;
-
+import dk.jlh.games.lines.Board.Space;
 import org.junit.Before;
 import org.junit.Test;
 
-import dk.jlh.games.lines.Board.Space;
+import java.util.LinkedList;
+
+import static dk.jlh.games.lines.BoardMatcher.doesMatch;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class BoardUnitTest {
 
@@ -50,8 +48,9 @@ public class BoardUnitTest {
 
     @Test
     public void testCalcDistForNeighbours2() throws Exception {
-        Board board = (new BoardBuilder(9))
-                .row(0, " 1 1 1 1         .")
+        BoardBuilder boardBuilder = new BoardBuilder(9);
+        Board board = boardBuilder
+                .row(0, " 1 1 1 1   a     b")
                 .row(1, " 1 2 3 4 5 1     .")
                 .row(2, "     2 3 4 5 1 2 .")
                 .row(3, "   1 2 3 4 5 1    ")
@@ -61,39 +60,26 @@ public class BoardUnitTest {
                 .row(7, " 1 2 3            ")
                 .row(8, " 1 2 3            ")
                 .build();
-        Space spaceA = board.getSpace(5, 0);
-        Space spaceB = board.getSpace(8, 0);
+        Space spaceA = boardBuilder.getSpaceA();
+        Space spaceB = boardBuilder.getSpaceB();
+
         board.calcDistances(spaceA, spaceB);
-        assertThat(spaceA.distanceToDest, is(3));
-        assertThat(board.getSpace(4, 0).distanceToDest, is(4));
-        assertThat(board.getSpace(5, 1).distanceToDest, is(greaterThan(1000)));
-        assertThat(board.getSpace(7, 1).distanceToDest, is(2));
-        assertThat(board.getSpace(7, 0).distanceToDest, is(1));
-        assertThat(board.getSpace(8, 1).distanceToDest, is(1));
+
+        Board wantedBoard = (new BoardBuilder(9))
+                .row(0, "?1?1?1?1403.2.1.0.")
+                .row(1, " 1 2 3?4?5?13.2.1.")
+                .row(2, "? ? ?2 3 4 5?1 22.")
+                .row(3, "? ?1 2 3 4 5 14 3 ")
+                .row(4, " 1 2 3      6 5 4 ")
+                .row(5, " 1 2 3        6 5 ")
+                .row(6, " 1 2 3            ")
+                .row(7, " 1 2 3            ")
+                .row(8, " 1 2 3            ")
+                .build();
+
+        System.out.println(board);
+        System.out.println(wantedBoard);
+
+        assertThat(board, doesMatch(wantedBoard));
     }
-    @Test
-    public void testRemoveMe() throws Exception {
-        Board board = (new BoardBuilder(9))
-                .row(0, " 1 1 1 1         .")
-                .row(1, " 1 2 3 4 5 1     .")
-                .row(2, "     2 3 4 5 1 2 .")
-                .row(3, "   1 2 3 4 5 1    ")
-                .row(4, " 1 2 3            ")
-                .row(5, " 1 2 3            ")
-                .row(6, " 1 2 3            ")
-                .row(7, " 1 2 3            ")
-                .row(8, " 1 2 3            ")
-                .build();
-        Board board2 = (new BoardBuilder(9))
-                .row(0, " 1 1 1 1         .")
-                .row(1, " 1 2 3 4 5 1     .")
-                .row(2, "     2 3 4 5 1 2 .")
-                .row(3, "   1 2 3 4 5 1    ")
-                .row(4, " 1 2 3            ")
-                .row(5, " 1 2 3            ")
-                .row(6, " 1 2 3            ")
-                .row(7, " 1 2 3            ")
-                .row(8, " 1 2 3            ")
-                .build();
-        assertThat(board, matches(board2));
-    }}
+}
