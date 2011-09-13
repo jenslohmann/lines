@@ -10,7 +10,7 @@ import static dk.jlh.games.lines.BoardMatcher.doesMatch;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BoardUnitTest {
+public class BoardTest {
 
     Board board;
 
