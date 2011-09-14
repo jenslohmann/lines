@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public class Board {
     /**
-     * "External" size
+     * "External" size.
      */
     final int size;
     private List<Space> freeSet;
@@ -21,7 +21,7 @@ public class Board {
     public class Space {
         private int x;
         private int y;
-        public int occupant; // FIXME
+        public int occupant;
         boolean selected;
         int distanceToDest; // Used by shortest path algorithm
 

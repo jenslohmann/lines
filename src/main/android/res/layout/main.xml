@@ -22,7 +22,7 @@
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"/>
         <TextView android:id="@+id/widget84"
-                  android:layout_width="wrap_content"
+                  android:layout_width="fill_parent"
                   android:layout_height="wrap_content"
                   android:layout_weight="1"/>
         <TextView android:id="@+id/scoreLabel"
@@ -38,8 +38,14 @@
                                   android:layout_width="wrap_content"
                                   android:layout_height="wrap_content"
                                   android:layout_gravity="center_horizontal"/>
-    <Button android:id="@+id/newGame"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New game!"/>
+    <LinearLayout android:id="@+id/bottom"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:orientation="vertical">
+        <Button android:id="@+id/newGame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New game!"
+                android:layout_gravity="center_horizontal"/>
+    </LinearLayout>
 </LinearLayout>
