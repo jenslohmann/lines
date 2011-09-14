@@ -21,14 +21,18 @@ public class BoardTest {
 
     @Test
     public void testCalcDistances() {
-        Space curSpace = board.getSpace(0, 2);
-        curSpace.distanceToDest = 0;
-        board.getSpace(0, 1).occupant = 1;
-        board.calcDistances(board.getSpace(0, 0), curSpace);
-        assertThat(board.getSpace(0, 0).distanceToDest, is(4));
-        assertThat(board.getSpace(1, 0).distanceToDest, is(3));
-        assertThat(board.getSpace(1, 1).distanceToDest, is(2));
-        assertThat(board.getSpace(1, 2).distanceToDest, is(1));
+        BoardBuilder boardBuilder = new BoardBuilder(3);
+        Board board = boardBuilder
+                .row(0, " a . .")
+                .row(1, " 1 . .")
+                .row(2, " b . .").build();
+        board.calcDistances(boardBuilder.getSpaceA(), boardBuilder.getSpaceB());
+
+        Board expectedBoard = (new BoardBuilder(3))
+                .row(0, "4.3 4 ")
+                .row(1, " 12 3 ")
+                .row(2, "0 1 2 ").build();
+        assertThat(board, doesMatch(expectedBoard));
     }
 
     @Test
