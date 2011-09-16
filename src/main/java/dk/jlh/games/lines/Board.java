@@ -42,6 +42,22 @@ public class Board {
             return y;
         }
 
+        public Space getSpaceCloserToDest() {
+            if (x > 0 && Board.this.space[getIndexInSpaceArray(x, y) + LEFT].distanceToDest < distanceToDest) {
+                return Board.this.space[getIndexInSpaceArray(x, y) + LEFT];
+            }
+            if (x < size - 1 && Board.this.space[getIndexInSpaceArray(x, y) + RIGHT].distanceToDest < distanceToDest) {
+                return Board.this.space[getIndexInSpaceArray(x, y) + RIGHT];
+            }
+            if (y > 0 && Board.this.space[getIndexInSpaceArray(x, y) + ABOVE].distanceToDest < distanceToDest) {
+                return Board.this.space[getIndexInSpaceArray(x, y) + ABOVE];
+            }
+            if (y < size - 1 && Board.this.space[getIndexInSpaceArray(x, y) + BELOW].distanceToDest < distanceToDest) {
+                return Board.this.space[getIndexInSpaceArray(x, y) + BELOW];
+            }
+            return null;
+        }
+
         @Override
         public String toString() {
             return "Space(" + x + "," + y + ")";
@@ -67,7 +83,7 @@ public class Board {
         space = new Space[1 + (size + 1) * (size + 2)];
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                space[1 + x + (y + 1) * (size + 1)] = new Space(x, y);
+                space[getIndexInSpaceArray(x, y)] = new Space(x, y);
             }
         }
 
@@ -127,10 +143,10 @@ public class Board {
     }
 
     void calcDistForNeighbours(Space src, LinkedList<Space> toDo, Space curSpace) {
-        calcDistForNeighbour(src, toDo, curSpace, getSpace(curSpace.getX() - 1, curSpace.getY()));
-        calcDistForNeighbour(src, toDo, curSpace, getSpace(curSpace.getX() + 1, curSpace.getY()));
-        calcDistForNeighbour(src, toDo, curSpace, getSpace(curSpace.getX(), curSpace.getY() - 1));
-        calcDistForNeighbour(src, toDo, curSpace, getSpace(curSpace.getX(), curSpace.getY() + 1));
+        calcDistForNeighbour(src, toDo, curSpace, space[getIndexInSpaceArray(curSpace.getX(), curSpace.getY()) + LEFT]);
+        calcDistForNeighbour(src, toDo, curSpace, space[getIndexInSpaceArray(curSpace.getX(), curSpace.getY()) + RIGHT]);
+        calcDistForNeighbour(src, toDo, curSpace, space[getIndexInSpaceArray(curSpace.getX(), curSpace.getY()) + ABOVE]);
+        calcDistForNeighbour(src, toDo, curSpace, space[getIndexInSpaceArray(curSpace.getX(), curSpace.getY()) + BELOW]);
     }
 
     private void calcDistForNeighbour(Space src, LinkedList<Space> toDo, Space curSpace, Space neighbour) {
@@ -192,12 +208,12 @@ public class Board {
         List<Space> candidates = new ArrayList<Space>(9);
         candidates.add(includingSpace);
         Space s = includingSpace;
-        while ((s = space[1 + s.getX() + (s.getY() + 1) * (size + 1) + direction1]) != null
+        while ((s = space[getIndexInSpaceArray(s.getX(), s.getY()) + direction1]) != null
                 && s.occupant == includingSpace.occupant) {
             candidates.add(s);
         }
         s = includingSpace;
-        while ((s = space[1 + s.getX() + (s.getY() + 1) * (size + 1) + direction2]) != null
+        while ((s = space[getIndexInSpaceArray(s.getX(), s.getY()) + direction2]) != null
                 && s.occupant == includingSpace.occupant) {
             candidates.add(s);
         }
@@ -205,7 +221,7 @@ public class Board {
     }
 
     Space getSpace(int x, int y) {
-        return space[1 + x + (y + 1) * (size + 1)];
+        return space[getIndexInSpaceArray(x, y)];
     }
 
     public void setController(Lines controller) {
@@ -215,6 +231,10 @@ public class Board {
     public void freeSpace(Space selectedSpace) {
         selectedSpace.occupant = 0;
         freeSet.add(selectedSpace);
+    }
+
+    int getIndexInSpaceArray(int x, int y) {
+        return 1 + x + (y + 1) * (size + 1);
     }
 
     @Override
