@@ -19,14 +19,19 @@ class WorkerThread extends Thread {
 
     @Override
     public void run() {
+        Canvas prevCanvas = null;
         while (controller.isRunning()) {
-            controller.movePiece();
-            controller.removePiece();
-            // FIXME Check for state change - don't redraw if stable
+            boolean dirty = controller.movePiece();
+            dirty |= controller.removePiece();
+
             synchronized (surfaceHolder) {
                 Canvas canvas = surfaceHolder.lockCanvas();
                 try {
-                    linesView.doDraw(canvas);
+                    // FIXME Fix blinking etc.
+                    // if (dirty || prevCanvas != canvas) {
+                        prevCanvas = canvas;
+                        linesView.doDraw(canvas);
+                    // }
                 } finally {
                     surfaceHolder.unlockCanvasAndPost(canvas);
                 }

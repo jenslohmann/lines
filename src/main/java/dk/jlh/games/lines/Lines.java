@@ -26,6 +26,7 @@ public class Lines extends Activity {
     private boolean running = true;
     private Thread worker;
     private List<Board.Space> toRemove = new ArrayList<Board.Space>(10);
+    private HighScoreHandler scoreHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,8 @@ public class Lines extends Activity {
         linesView.setBoard(board);
         worker = new WorkerThread(linesView, this);
 
+        scoreHandler = new HighScoreHandler();
+
         initialize();
     }
 
@@ -57,13 +60,16 @@ public class Lines extends Activity {
     /**
      * Is called solely from worker thread.
      * Moves a piece one space at a time for animation if a piece is set to move.
+     * @return boolean returns {@code true} iff a piece was actually moved.
      */
-    void movePiece() {
+    boolean movePiece() {
+        boolean dirty = false;
         if (getState() == GameState.BUSY) {
             Board.Space movingPieceSpace = getMovingPieceSpace();
 
             Board.Space neighbour = movingPieceSpace.getSpaceCloserToDest();
             if (neighbour != null) {
+                dirty = true;
                 board.setSpace(neighbour.getX(), neighbour.getY(), movingPieceSpace.occupant);
                 board.freeSpace(movingPieceSpace);
                 if (neighbour.distanceToDest == 0) {
@@ -76,7 +82,7 @@ public class Lines extends Activity {
                     }
 
                     if (getState() == GameState.GAME_OVER) {
-                        // TODO Post high score to internet
+                        scoreHandler.addNewScore(score);
                     } else {
                         setState(GameState.READY);
                     }
@@ -89,6 +95,7 @@ public class Lines extends Activity {
                 setState(GameState.READY);
             }
         }
+        return dirty;
     }
 
     private void setNextPieces(int[] pieceIds) {
@@ -139,12 +146,15 @@ public class Lines extends Activity {
 
     /**
      * Removes next piece in line to be removed in the animation.
+     * @return boolean returns {@code true} iff a piece was removed.
      */
-    public void removePiece() {
+    public boolean removePiece() {
         if (!toRemove.isEmpty()) {
             board.freeSpace(toRemove.remove(0));
             addToScore(1);
+            return true;
         }
+        return false;
     }
 
     private int[] newPieces() {
